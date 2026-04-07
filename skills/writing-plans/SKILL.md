@@ -16,6 +16,41 @@ Assume they are a skilled developer, but know almost nothing about the toolset o
 **Save plans to:** `docs/plans/YYYY-MM-DD-<feature-name>.md`
 - (User preferences for plan location override this default)
 
+## Vagueness Gate
+
+Before writing a plan, check: is the input specific enough?
+
+**Proceed if the spec/requirements contain:**
+- File paths, function names, or component references
+- Technology choices or framework references
+- Numbered steps or ordered requirements
+- Success criteria or expected behaviors
+
+**Redirect to brainstorming if:**
+- No concrete references to code or architecture
+- Vague descriptions ("make it better", "add a feature")
+- No success criteria
+- Scope is unclear
+
+If vague: "This needs more definition before I can plan it." Then activate **brainstorming** skill.
+
+## Context Intake
+
+Before writing the plan, create or verify a context snapshot exists:
+
+```markdown
+## Context Snapshot
+
+**Task:** [What is being built]
+**Desired outcome:** [What success looks like]
+**Known facts:** [Codebase state, existing patterns, constraints]
+**Constraints:** [Technology, compatibility, timeline]
+**Unknowns:** [What needs to be discovered during implementation]
+**Codebase touchpoints:** [Key files/modules that will be affected]
+```
+
+If a context snapshot was already created during brainstorming, reference it. Otherwise create one now. Include it in the plan document header.
+
 ## Scope Check
 
 If the spec covers multiple independent subsystems, suggest breaking this into separate plans -- one per subsystem. Each plan should produce working, testable software on its own.

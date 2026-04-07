@@ -8,12 +8,15 @@ Opinionated development workflow skills and agents for [Gemini CLI](https://gith
 
 | Skill | When it activates |
 |-------|-------------------|
-| **brainstorming** | Before any creative work -- explores intent and design before code |
+| **autopilot** | End-to-end autonomous pipeline: idea to working code with QA and validation |
+| **brainstorming** | Before any creative work -- deep interview with ambiguity scoring and challenge modes |
 | **writing-plans** | When you have a spec and need a step-by-step implementation plan |
 | **executing-plans** | When executing a plan inline with verification checkpoints |
 | **subagent-driven-development** | When executing plans via agent-per-task with 2-stage review |
 | **test-driven-development** | Before writing any implementation code (red-green-refactor) |
 | **systematic-debugging** | When encountering bugs -- enforces root cause before fixes |
+| **ultra-qa** | After implementation -- autonomous test-fix-retest cycle (max 5 rounds) |
+| **slop-cleaner** | After implementation -- structured cleanup of AI-generated code smells |
 | **verification-before-completion** | Before claiming work is done -- evidence before assertions |
 | **requesting-code-review** | After completing features, before merging |
 | **receiving-code-review** | When handling review feedback with technical rigor |
@@ -135,7 +138,7 @@ Doctor checks:
 - Gemini CLI is installed
 - python3 or node available (for config resolution)
 - config.json is valid and complete
-- All 14 skills have valid frontmatter (name + description)
+- All 17 skills have valid frontmatter (name + description)
 - All 6 agents have resolved models (no `{{MODEL}}` placeholders)
 - GEMINI.md is present with skill-first workflow instructions
 - Gemini CLI can discover the installed skills
@@ -193,7 +196,10 @@ superpowers-gemini/
 │   ├── finishing-a-development-branch/SKILL.md
 │   ├── using-git-worktrees/SKILL.md
 │   ├── frontend-design/SKILL.md
-│   └── code-review/SKILL.md
+│   ├── code-review/SKILL.md
+│   ├── autopilot/SKILL.md
+│   ├── ultra-qa/SKILL.md
+│   └── slop-cleaner/SKILL.md
 └── agents/
     ├── code-reviewer.md
     ├── code-simplifier.md

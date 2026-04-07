@@ -10,12 +10,15 @@ You have access to a set of agent skills. Before taking action on any user reque
 
 | User intent | Skill to activate |
 |-------------|-------------------|
+| Build a large feature end-to-end autonomously | **autopilot** (chains all skills automatically) |
 | Build, create, design, or add a feature | **brainstorming** first, then **writing-plans** |
 | Build a web page, UI, or frontend component | **frontend-design** (+ brainstorming if new project) |
 | Fix a bug, investigate a failure, debug | **systematic-debugging** |
 | Implement code for a feature or fix | **test-driven-development** |
 | Execute tasks from an implementation plan | **subagent-driven-development** or **executing-plans** |
 | Multiple independent problems to solve | **dispatching-parallel-agents** |
+| Tests failing after implementation | **ultra-qa** (autonomous test-fix-retest cycle) |
+| Code works but looks AI-generated | **slop-cleaner** (structured cleanup) |
 | Review a pull request | **code-review** |
 | About to claim work is complete | **verification-before-completion** |
 | After completing a feature, before merge | **requesting-code-review** |
@@ -27,12 +30,16 @@ You have access to a set of agent skills. Before taking action on any user reque
 
 Most tasks follow this chain. Do not skip steps:
 
-1. **brainstorming** — explore the idea, ask clarifying questions, propose approaches, write a design spec
+1. **brainstorming** — deep interview with ambiguity scoring, challenge modes, then write design spec
 2. **writing-plans** — create a detailed step-by-step implementation plan from the spec
 3. **using-git-worktrees** — create an isolated workspace
 4. **subagent-driven-development** — delegate to agents per task with review after each
-5. **verification-before-completion** — run tests, verify output before claiming done
-6. **finishing-a-development-branch** — present merge/PR/discard options
+5. **ultra-qa** — autonomous test-fix-retest cycle until green
+6. **slop-cleaner** — structured cleanup of AI-generated code smells
+7. **verification-before-completion** — run tests, verify output before claiming done
+8. **finishing-a-development-branch** — present merge/PR/discard options
+
+For end-to-end autonomous execution, use **autopilot** which chains all of the above automatically.
 
 ## Agent Delegation
 

@@ -3,11 +3,12 @@ name: brainstorming
 description: >
   Use before any creative work - creating features, building components, adding functionality,
   or modifying behavior. Explores user intent, requirements and design before implementation.
+  Uses structured ambiguity scoring and challenge modes to pressure-test ideas.
 ---
 
 # Brainstorming Ideas Into Designs
 
-Help turn ideas into fully formed designs and specs through natural collaborative dialogue.
+Help turn ideas into fully formed designs and specs through structured collaborative dialogue. Use ambiguity scoring to identify weak spots and challenge modes to pressure-test assumptions.
 
 Start by understanding the current project context, then ask questions one at a time to refine the idea. Once you understand what you're building, present the design and get user approval.
 
@@ -23,26 +24,98 @@ Every project goes through this process. A todo list, a single-function utility,
 
 Complete these steps in order:
 
-1. **Explore project context** -- check files, docs, recent commits
-2. **Ask clarifying questions** -- one at a time, understand purpose/constraints/success criteria
-3. **Propose 2-3 approaches** -- with trade-offs and your recommendation
-4. **Present design** -- in sections scaled to their complexity, get user approval after each section
-5. **Write design doc** -- save to `docs/specs/YYYY-MM-DD-<topic>-design.md` and commit
-6. **Spec self-review** -- quick inline check for placeholders, contradictions, ambiguity, scope
-7. **User reviews written spec** -- ask user to review the spec file before proceeding
-8. **Transition to implementation** -- activate writing-plans skill to create implementation plan
+1. **Create context snapshot** -- capture task, desired outcome, constraints, unknowns
+2. **Explore project context** -- check files, docs, recent commits
+3. **Deep interview** -- structured questioning with ambiguity scoring
+4. **Challenge round** -- pressure-test the emerging design with challenge modes
+5. **Propose 2-3 approaches** -- with trade-offs and your recommendation
+6. **Present design** -- in sections scaled to their complexity, get user approval after each section
+7. **Write design doc** -- save to `docs/specs/YYYY-MM-DD-<topic>-design.md` and commit
+8. **Spec self-review** -- check for placeholders, contradictions, ambiguity, scope
+9. **User reviews written spec** -- ask user to review the spec file before proceeding
+10. **Transition to implementation** -- activate writing-plans skill to create implementation plan
 
-## Process
+## Context Snapshot
 
-**Understanding the idea:**
+Before asking any questions, create a context snapshot:
 
-- Check out the current project state first (files, docs, recent commits)
-- Before asking detailed questions, assess scope: if the request describes multiple independent subsystems, flag this immediately. Don't spend questions refining details of a project that needs to be decomposed first.
-- If the project is too large for a single spec, help the user decompose into sub-projects. Then brainstorm the first sub-project through the normal design flow.
-- For appropriately-scoped projects, ask questions one at a time to refine the idea
-- Prefer multiple choice questions when possible, but open-ended is fine too
-- Only one question per message
-- Focus on understanding: purpose, constraints, success criteria
+```markdown
+## Context Snapshot
+
+**Task:** [What the user asked for — their words]
+**Desired outcome:** [What success looks like — if unclear, this is the first question]
+**Known facts:** [What we know about the codebase, constraints, etc.]
+**Constraints:** [Time, technology, compatibility requirements]
+**Unknowns:** [What we need to figure out]
+**Codebase touchpoints:** [Key files/modules that will be affected]
+```
+
+Update this snapshot as you learn more. It becomes part of the spec document.
+
+## Deep Interview
+
+### Ambiguity Scoring
+
+Track five dimensions of understanding. Each starts at 0 and moves toward 100 as questions are answered:
+
+| Dimension | Weight | What it measures |
+|-----------|--------|-----------------|
+| **Intent** | 0.30 | Why does the user want this? What problem does it solve? |
+| **Outcome** | 0.25 | What does "done" look like? How will success be measured? |
+| **Scope** | 0.20 | What's in and what's out? Where are the boundaries? |
+| **Constraints** | 0.15 | Technical limitations, compatibility, performance, timeline? |
+| **Success criteria** | 0.10 | How will we verify this works? What are the acceptance tests? |
+
+**Readiness score** = weighted sum of all dimensions.
+
+- Below 60: Keep asking questions. Target the lowest-scoring dimension.
+- 60-80: Good enough to propose approaches, but flag remaining gaps.
+- Above 80: Ready to present design.
+
+**Always target the weakest dimension** with your next question. Don't ask about constraints when intent is still at 20.
+
+### Questioning Rules
+
+- **One question per message** — never ask two questions at once
+- **Prefer multiple choice** when the answer space is bounded
+- **Open-ended when exploring** new territory the user hasn't mentioned
+- **State the dimension** you're targeting: "I want to understand the scope better..."
+- **Update scores** internally after each answer (you don't need to show the numbers every time, but if the user asks, show them)
+
+### Mandatory Readiness Gates
+
+Before moving to approaches, these MUST be explicit:
+
+1. **Non-goals** — what this project deliberately does NOT do
+2. **Decision boundaries** — which decisions are settled vs. open for the design to decide
+
+If the user hasn't volunteered these, ask directly: "What should this explicitly NOT do?" and "Which technical decisions are already made vs. open?"
+
+## Challenge Modes
+
+After the deep interview (readiness > 60), run at least one challenge pass before proposing approaches. Pick the most relevant mode:
+
+### Contrarian
+Challenge the core assumptions. What if the user is solving the wrong problem?
+- "What if you didn't build this at all — what's the workaround?"
+- "What if the requirement you're most certain about is wrong?"
+- "Is there an existing solution that covers 80% of this?"
+
+### Simplifier
+Probe for minimal scope. What's the smallest thing that would be useful?
+- "If you could only ship one feature from this list, which one?"
+- "What's the version that takes 1 day instead of 1 week?"
+- "Which requirements are must-haves vs. nice-to-haves?"
+
+### Ontologist
+Reframe at the essence level. Are the abstractions right?
+- "You said 'users' — is that one type of user or several with different needs?"
+- "You described this as a 'dashboard' — is it really a dashboard or a report or a monitoring tool?"
+- "What's the actual data flow here, ignoring the UI?"
+
+**One challenge pass is mandatory.** If the design survives the challenge, proceed. If it cracks open, loop back to questioning.
+
+## Process (after interview and challenge)
 
 **Exploring approaches:**
 
@@ -62,20 +135,21 @@ Complete these steps in order:
 
 - Break the system into smaller units that each have one clear purpose
 - Each unit should communicate through well-defined interfaces and be understood and tested independently
-- Can someone understand what a unit does without reading its internals? Can you change the internals without breaking consumers?
-- Smaller, well-bounded units are easier to work with -- you reason better about code you can hold in context at once
+- Smaller, well-bounded units are easier to work with
 
 **Working in existing codebases:**
 
 - Explore the current structure before proposing changes. Follow existing patterns.
 - Where existing code has problems that affect the work, include targeted improvements as part of the design
-- Don't propose unrelated refactoring. Stay focused on what serves the current goal.
+- Don't propose unrelated refactoring.
 
 ## After the Design
 
 **Documentation:**
 
 - Write the validated design (spec) to `docs/specs/YYYY-MM-DD-<topic>-design.md`
+  - Include the context snapshot at the top
+  - Include non-goals and decision boundaries
   - (User preferences for spec location override this default)
 - Commit the design document to git
 
@@ -86,8 +160,9 @@ After writing the spec document, look at it with fresh eyes:
 2. **Internal consistency:** Do any sections contradict each other?
 3. **Scope check:** Is this focused enough for a single implementation plan?
 4. **Ambiguity check:** Could any requirement be interpreted two different ways?
+5. **Non-goals check:** Are non-goals explicitly stated?
 
-Fix any issues inline. No need to re-review -- just fix and move on.
+Fix any issues inline.
 
 **User Review Gate:**
 After the spec review loop passes, ask the user to review the written spec before proceeding:
@@ -104,8 +179,9 @@ Wait for the user's response. Only proceed once the user approves.
 ## Key Principles
 
 - **One question at a time** - Don't overwhelm with multiple questions
-- **Multiple choice preferred** - Easier to answer than open-ended when possible
+- **Target the weakest dimension** - Don't ask about constraints when intent is unclear
+- **Challenge before committing** - Run at least one challenge mode
 - **YAGNI ruthlessly** - Remove unnecessary features from all designs
 - **Explore alternatives** - Always propose 2-3 approaches before settling
 - **Incremental validation** - Present design, get approval before moving on
-- **Be flexible** - Go back and clarify when something doesn't make sense
+- **Non-goals are required** - Every spec must say what it does NOT do
