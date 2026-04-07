@@ -23,18 +23,18 @@ Opinionated development workflow skills and agents for [Gemini CLI](https://gith
 | **frontend-design** | When building web components/pages with distinctive design |
 | **code-review** | When reviewing a pull request |
 
-### Agents (dispatched as subagents by the model or via `@agent-name`)
+### Agents (delegated as sub-agents by the model)
 
 | Agent | Model tier | Purpose |
 |-------|------------|---------|
-| **@code-reviewer** | strong | Reviews completed work against plans and standards |
-| **@code-simplifier** | strong | Simplifies code for clarity while preserving behavior |
-| **@implementer** | fast | Executes specific plan tasks with TDD and self-review |
-| **@spec-reviewer** | fast | Verifies implementation matches spec exactly |
-| **@explorer** | fast | Read-only codebase exploration and investigation |
-| **@planner** | strong | Architecture analysis and implementation planning |
+| **implementer** | medium | Executes specific plan tasks with TDD, self-review, and commit |
+| **spec-reviewer** | fast | Verifies implementation matches spec exactly (read-only) |
+| **code-reviewer** | strong | Reviews code quality against plans and standards (read-only) |
+| **code-simplifier** | strong | Simplifies code for clarity while preserving behavior |
+| **explorer** | fast | Read-only codebase exploration and investigation |
+| **planner** | strong | Architecture analysis and implementation planning (read-only) |
 
-Model tiers are configured in `config.json` (defaults: strong=`gemini-2.5-pro`, fast=`gemini-2.5-flash`).
+Model tiers are configured in `config.json` (defaults: strong=`gemini-2.5-pro`, medium=`gemini-2.5-flash`, fast=`gemini-2.5-flash`).
 
 ## Requirements
 
@@ -43,13 +43,7 @@ Model tiers are configured in `config.json` (defaults: strong=`gemini-2.5-pro`, 
 
 ## Install
 
-### Option A: Gemini CLI native (recommended)
-
-```bash
-gemini extensions install https://github.com/codeandcodes/superpowers-gemini.git
-```
-
-### Option B: Install script (recommended for custom models)
+### Option A: Install script (recommended)
 
 ```bash
 # Clone the repo
@@ -65,12 +59,23 @@ cd superpowers-gemini
 # Or install into a specific project
 ./install.sh project /path/to/your/project
 
+# Verify installation
+./install.sh doctor
+
 # Check current model config
 ./install.sh config
 
 # Uninstall
 ./install.sh uninstall
 ```
+
+### Option B: Gemini CLI native extension
+
+```bash
+gemini extensions install https://github.com/codeandcodes/superpowers-gemini.git
+```
+
+Note: native install copies files as-is without resolving model templates. You'll need to run `./install.sh` afterward to resolve `{{MODEL}}` placeholders in agent files, and to install `GEMINI.md`.
 
 ## Configuration
 
@@ -117,8 +122,6 @@ Agent models are configured in `config.json`. Define model tiers, then assign ea
 
 Edit `config.json` before running `./install.sh`. The install script reads the config and templates the resolved model into each agent file during installation. Run `./install.sh config` to preview what will be installed.
 
-If you used `gemini extensions install` (Option A), agent files keep the `{{MODEL}}` placeholder -- run the install script afterward to resolve them.
-
 ### Verifying installation
 
 Run the doctor to check everything is healthy:
@@ -134,26 +137,30 @@ Doctor checks:
 - config.json is valid and complete
 - All 14 skills have valid frontmatter (name + description)
 - All 6 agents have resolved models (no `{{MODEL}}` placeholders)
+- GEMINI.md is present with skill-first workflow instructions
 - Gemini CLI can discover the installed skills
 
 ### Skill activation
 
 Skills activate automatically -- the model reads each skill's `description` field and decides when to use it. No manual configuration needed.
 
+The included `GEMINI.md` reinforces this by telling the model to always check skills before acting. Without it, the model may skip skills entirely.
+
 To disable a specific skill:
 ```bash
-# Interactive
-/skills disable brainstorming
-
-# CLI
-gemini skills disable brainstorming
+/skills disable brainstorming           # Interactive
+gemini skills disable brainstorming     # CLI
 ```
 
-### Agent invocation
+### Agent delegation
 
-Agents can be invoked two ways:
-- **Automatic:** The model delegates when a task matches an agent's description
-- **Explicit:** Type `@agent-name <task>` in the prompt (e.g., `@code-reviewer review the latest commit`)
+Agents are delegated by the model as sub-agents when a task matches their description. The `GEMINI.md` file includes explicit delegation rules and the implementation cycle:
+
+```
+implementer → spec-reviewer → code-reviewer (repeat per task)
+```
+
+The model can also be directed to use an agent explicitly in conversation.
 
 ### Customization
 
@@ -170,7 +177,7 @@ superpowers-gemini/
 ├── gemini-extension.json    # Extension manifest for native install
 ├── config.json              # Model configuration (edit before install)
 ├── install.sh               # Shell installer (reads config.json, templates agents)
-├── GEMINI.md                # Skill-first workflow instructions (installed into .gemini/)
+├── GEMINI.md                # Skill-first workflow + agent delegation instructions
 ├── README.md
 ├── skills/
 │   ├── brainstorming/SKILL.md
@@ -198,11 +205,19 @@ superpowers-gemini/
 
 ## How it works
 
-**Skills** are markdown files with a `name` and `description` in YAML frontmatter. At session start, Gemini CLI loads all skill descriptions into context. When the model recognizes a task matching a skill's description, it calls `activate_skill` to load the full instructions into the conversation.
+Three layers work together:
 
-**Agents** are markdown files that define isolated subagents with their own model, tool access, and system prompt. The model delegates tasks to agents automatically or users invoke them with `@agent-name`. Agents run in isolated context windows and report results back.
+**Skills** are markdown files with a `name` and `description` in YAML frontmatter. At session start, Gemini CLI loads all skill descriptions into context. When the model recognizes a task matching a skill's description, it calls `activate_skill` to load the full instructions into the conversation. Skills tell the model *what workflow to follow* (brainstorm before coding, use TDD, verify before claiming done).
 
-**GEMINI.md** is the critical glue. Gemini CLI injects skill descriptions into the system prompt, but the model won't reliably activate them without explicit instructions to do so. The included `GEMINI.md` tells the model to always check available skills before taking action — similar to how Claude Code's `using-superpowers` meta-skill works. Without it, the model will likely ignore skills and just start coding.
+**Agents** are markdown files that define isolated sub-agents with their own model, tool access, and system prompt. The model delegates tasks to agents, which run in isolated context windows and report results back. Agents do the *actual work* -- implementing code, reviewing specs, checking quality.
+
+**GEMINI.md** is the critical glue. Gemini CLI injects skill descriptions and agent definitions into the system prompt, but the model won't reliably use them without explicit instructions. The included `GEMINI.md` provides:
+- **Skill-first rule** -- always check available skills before taking action
+- **Skill routing table** -- maps user intents to specific skills
+- **Agent delegation rules** -- when and how to delegate to each agent
+- **Implementation cycle** -- the `implementer` → `spec-reviewer` → `code-reviewer` loop
+
+Without `GEMINI.md`, the model will likely ignore skills and agents, and just start coding directly. This is equivalent to Claude Code's `using-superpowers` meta-skill.
 
 ## Ported from
 
