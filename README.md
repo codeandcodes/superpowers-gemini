@@ -46,14 +46,14 @@ Model tiers are configured in `config.json` (defaults: strong=`gemini-2.5-pro`, 
 ### Option A: Gemini CLI native (recommended)
 
 ```bash
-gemini extensions install https://github.com/YOUR_USERNAME/superpowers-gemini.git
+gemini extensions install https://github.com/codeandcodes/superpowers-gemini.git
 ```
 
 ### Option B: Install script (recommended for custom models)
 
 ```bash
 # Clone the repo
-git clone https://github.com/YOUR_USERNAME/superpowers-gemini.git
+git clone https://github.com/codeandcodes/superpowers-gemini.git
 cd superpowers-gemini
 
 # (Optional) Edit config.json to set your preferred models

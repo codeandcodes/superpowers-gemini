@@ -4,7 +4,7 @@ set -euo pipefail
 # superpowers-gemini installer
 # Installs skills and agents for Gemini CLI
 
-REPO_URL="https://github.com/YOUR_USERNAME/superpowers-gemini.git"
+REPO_URL="https://github.com/codeandcodes/superpowers-gemini.git"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 INSTALL_MODE="${1:-}"
