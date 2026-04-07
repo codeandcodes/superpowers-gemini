@@ -170,6 +170,7 @@ superpowers-gemini/
 ├── gemini-extension.json    # Extension manifest for native install
 ├── config.json              # Model configuration (edit before install)
 ├── install.sh               # Shell installer (reads config.json, templates agents)
+├── GEMINI.md                # Skill-first workflow instructions (installed into .gemini/)
 ├── README.md
 ├── skills/
 │   ├── brainstorming/SKILL.md
@@ -200,6 +201,8 @@ superpowers-gemini/
 **Skills** are markdown files with a `name` and `description` in YAML frontmatter. At session start, Gemini CLI loads all skill descriptions into context. When the model recognizes a task matching a skill's description, it calls `activate_skill` to load the full instructions into the conversation.
 
 **Agents** are markdown files that define isolated subagents with their own model, tool access, and system prompt. The model delegates tasks to agents automatically or users invoke them with `@agent-name`. Agents run in isolated context windows and report results back.
+
+**GEMINI.md** is the critical glue. Gemini CLI injects skill descriptions into the system prompt, but the model won't reliably activate them without explicit instructions to do so. The included `GEMINI.md` tells the model to always check available skills before taking action — similar to how Claude Code's `using-superpowers` meta-skill works. Without it, the model will likely ignore skills and just start coding.
 
 ## Ported from
 

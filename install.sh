@@ -228,6 +228,17 @@ install_to() {
     done
     echo "  Installed $count agents (models resolved from config.json)"
   fi
+
+  # GEMINI.md (workflow instructions that tell the model to use skills)
+  if [[ -f "$SOURCE_DIR/GEMINI.md" ]]; then
+    local gemini_md="$dest/GEMINI.md"
+    if [[ -f "$gemini_md" ]]; then
+      echo "  GEMINI.md already exists at $gemini_md -- skipping (won't overwrite)"
+    else
+      cp "$SOURCE_DIR/GEMINI.md" "$gemini_md"
+      echo "  Installed GEMINI.md (skill-first workflow instructions)"
+    fi
+  fi
 }
 
 # --- Uninstall ---
@@ -257,6 +268,11 @@ uninstall() {
           echo "  Removed agent: $agent (from $base)"
         fi
       done
+      # Remove GEMINI.md only if it's ours (contains "Superpowers Workflow" header)
+      if [[ -f "$base/GEMINI.md" ]] && head -1 "$base/GEMINI.md" | grep -q "Superpowers Workflow"; then
+        rm "$base/GEMINI.md"
+        echo "  Removed GEMINI.md (from $base)"
+      fi
     fi
   done
 
@@ -447,6 +463,17 @@ except Exception as e:
           fi
         fi
       done
+
+      # Check GEMINI.md
+      if [[ -f "$base/GEMINI.md" ]]; then
+        if grep -q "activate_skill" "$base/GEMINI.md"; then
+          ok "GEMINI.md -- contains skill-first workflow instructions"
+        else
+          skip "GEMINI.md exists but doesn't reference activate_skill -- model may not activate skills"
+        fi
+      else
+        bad "GEMINI.md missing -- model won't know to activate skills (this is critical)"
+      fi
 
       # Count what's missing
       local missing_skills=()
