@@ -248,7 +248,7 @@ uninstall() {
     systematic-debugging verification-before-completion requesting-code-review
     receiving-code-review dispatching-parallel-agents subagent-driven-development
     finishing-a-development-branch using-git-worktrees frontend-design code-review
-    autopilot ultra-qa slop-cleaner
+    autopilot ultra-qa slop-cleaner visual-verdict web-clone session-notes cancel
   )
   local agents=(
     code-reviewer.md code-simplifier.md implementer.md
@@ -292,7 +292,7 @@ doctor() {
     systematic-debugging verification-before-completion requesting-code-review
     receiving-code-review dispatching-parallel-agents subagent-driven-development
     finishing-a-development-branch using-git-worktrees frontend-design code-review
-    autopilot ultra-qa slop-cleaner
+    autopilot ultra-qa slop-cleaner visual-verdict web-clone session-notes cancel
   )
   local EXPECTED_AGENTS=(
     code-reviewer code-simplifier implementer

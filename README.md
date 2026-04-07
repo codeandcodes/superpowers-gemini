@@ -23,6 +23,10 @@ Opinionated development workflow skills and agents for [Gemini CLI](https://gith
 | **dispatching-parallel-agents** | When facing 2+ independent problems |
 | **finishing-a-development-branch** | When implementation is done and you need merge/PR/cleanup |
 | **using-git-worktrees** | When starting feature work that needs isolation |
+| **visual-verdict** | After frontend work -- screenshot comparison with structured scoring loop |
+| **web-clone** | When cloning/recreating a website from a URL with visual verification |
+| **session-notes** | During long sessions -- persist decisions and context to survive compression |
+| **cancel** | When stopping work -- dependency-aware cleanup of branches, worktrees, state |
 | **frontend-design** | When building web components/pages with distinctive design |
 | **code-review** | When reviewing a pull request |
 
@@ -138,7 +142,7 @@ Doctor checks:
 - Gemini CLI is installed
 - python3 or node available (for config resolution)
 - config.json is valid and complete
-- All 17 skills have valid frontmatter (name + description)
+- All 21 skills have valid frontmatter (name + description)
 - All 6 agents have resolved models (no `{{MODEL}}` placeholders)
 - GEMINI.md is present with skill-first workflow instructions
 - Gemini CLI can discover the installed skills
@@ -199,7 +203,11 @@ superpowers-gemini/
 │   ├── code-review/SKILL.md
 │   ├── autopilot/SKILL.md
 │   ├── ultra-qa/SKILL.md
-│   └── slop-cleaner/SKILL.md
+│   ├── slop-cleaner/SKILL.md
+│   ├── visual-verdict/SKILL.md
+│   ├── web-clone/SKILL.md
+│   ├── session-notes/SKILL.md
+│   └── cancel/SKILL.md
 └── agents/
     ├── code-reviewer.md
     ├── code-simplifier.md

@@ -23,6 +23,10 @@ You have access to a set of agent skills. Before taking action on any user reque
 | About to claim work is complete | **verification-before-completion** |
 | After completing a feature, before merge | **requesting-code-review** |
 | Received code review feedback | **receiving-code-review** |
+| Verify frontend matches a design/mockup | **visual-verdict** (screenshot comparison with scoring) |
+| Clone or recreate a website from a URL | **web-clone** (extract → generate → verify loop) |
+| Long session, need to persist context | **session-notes** (save decisions and state to file) |
+| Stop work, abandon plan, clean up state | **cancel** (dependency-aware cleanup) |
 | Need isolated workspace for feature work | **using-git-worktrees** |
 | Implementation done, ready to merge/PR | **finishing-a-development-branch** |
 
