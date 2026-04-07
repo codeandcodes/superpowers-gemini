@@ -1,0 +1,17 @@
+{
+  "models": {
+    "tiers": {
+      "strong": "gemini-2.5-pro",
+      "medium": "gemini-2.5-flash",
+      "fast":   "gemini-2.5-flash"
+    },
+    "agents": {
+      "code-reviewer":  "strong",
+      "code-simplifier": "strong",
+      "planner":        "strong",
+      "implementer":    "medium",
+      "spec-reviewer":  "fast",
+      "explorer":       "fast"
+    }
+  }
+}

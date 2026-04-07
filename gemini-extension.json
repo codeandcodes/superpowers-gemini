@@ -1,0 +1,7 @@
+{
+  "name": "superpowers-gemini",
+  "version": "1.0.0",
+  "description": "Opinionated development workflow skills and agents for Gemini CLI - brainstorming, planning, TDD, debugging, code review, and more.",
+  "skills": "./skills",
+  "agents": "./agents"
+}
