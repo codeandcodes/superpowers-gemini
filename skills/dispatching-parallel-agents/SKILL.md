@@ -47,7 +47,7 @@ Each agent gets:
 
 ### 3. Dispatch Agents
 
-Use `@agent-name` or let Gemini auto-delegate to appropriate agents. Each agent works on its isolated problem domain.
+Delegate to appropriate agents (e.g., the `implementer` agent). Each agent works on its isolated problem domain.
 
 ### 4. Review and Integrate
 

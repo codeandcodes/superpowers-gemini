@@ -23,15 +23,15 @@ Execute plan by dispatching fresh agent per task, with two-stage review after ea
 
 1. **Read plan** -- extract all tasks with full text, note context, create task tracking
 2. **For each task:**
-   a. Dispatch @implementer agent with full task text + context
+   a. Delegate to the `implementer` agent with full task text + context
    b. If implementer asks questions -- answer them, provide context
    c. Implementer implements, tests, commits, self-reviews
-   d. Dispatch @spec-reviewer to verify code matches spec
+   d. Delegate to the `spec-reviewer` agent to verify code matches spec
    e. If spec issues found -- implementer fixes, re-review
-   f. Dispatch @code-reviewer for code quality review
+   f. Delegate to the `code-reviewer` agent for code quality review
    g. If quality issues found -- implementer fixes, re-review
    h. Mark task complete
-3. **After all tasks** -- dispatch final @code-reviewer for entire implementation
+3. **After all tasks** -- delegate to the `code-reviewer` agent for entire implementation
 4. **Activate finishing-a-development-branch skill**
 
 ## Handling Implementer Status

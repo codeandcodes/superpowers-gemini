@@ -31,7 +31,7 @@ BASE_SHA=$(git rev-parse HEAD~1)  # or origin/main
 HEAD_SHA=$(git rev-parse HEAD)
 ```
 
-**2. Dispatch code-reviewer agent** using @code-reviewer with:
+**2. Delegate to the `code-reviewer` agent** with:
 - What was implemented
 - Plan or requirements reference
 - Base and head SHA
