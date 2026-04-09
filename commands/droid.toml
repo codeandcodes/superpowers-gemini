@@ -1,0 +1,4 @@
+description = "Persistent autonomous execution — keep going until fully resolved"
+prompt = """Activate the droid skill. KEEP GOING UNTIL THE TASK IS FULLY RESOLVED. \
+Do not pause between steps. Do not ask "shall I continue?" — just continue. \
+Task: {{args}}"""

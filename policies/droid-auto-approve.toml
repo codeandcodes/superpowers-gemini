@@ -1,0 +1,81 @@
+# Droid auto-approval policy for Gemini CLI
+#
+# Replaces --yolo with granular tool approval rules.
+# Install: copy to .gemini/policies/droid-auto-approve.toml in your project
+#
+# Three tiers:
+#   1. Read-only tools — always auto-approved (safe)
+#   2. Write tools — auto-approved for autonomous execution
+#   3. Deny rules — block destructive operations even in droid mode
+
+# --- Tier 1: Read-only tools (always safe) ---
+
+[[rules]]
+description = "Auto-approve file reading"
+tool = "read_file"
+decision = "allow"
+
+[[rules]]
+description = "Auto-approve glob search"
+tool = "glob"
+decision = "allow"
+
+[[rules]]
+description = "Auto-approve grep search"
+tool = "grep_search"
+decision = "allow"
+
+[[rules]]
+description = "Auto-approve directory listing"
+tool = "list_directory"
+decision = "allow"
+
+[[rules]]
+description = "Auto-approve web search"
+tool = "web_search"
+decision = "allow"
+
+[[rules]]
+description = "Auto-approve web fetch"
+tool = "web_fetch"
+decision = "allow"
+
+# --- Tier 2: Write tools (auto-approve for autonomous execution) ---
+
+[[rules]]
+description = "Auto-approve file writing"
+tool = "write_file"
+decision = "allow"
+
+[[rules]]
+description = "Auto-approve file editing"
+tool = "replace"
+decision = "allow"
+
+[[rules]]
+description = "Auto-approve shell commands"
+tool = "run_shell_command"
+decision = "allow"
+
+# --- Tier 3: Safety deny rules (highest priority) ---
+
+[[rules]]
+description = "Block recursive force deletion of root"
+tool = "run_shell_command"
+commandRegex = "rm\\s+-[rR]f\\s+/"
+decision = "deny"
+priority = 999
+
+[[rules]]
+description = "Block force push"
+tool = "run_shell_command"
+commandRegex = "git\\s+push\\s+.*--force"
+decision = "deny"
+priority = 999
+
+[[rules]]
+description = "Block dropping database tables"
+tool = "run_shell_command"
+commandRegex = "(?i)(DROP\\s+TABLE|DROP\\s+DATABASE)"
+decision = "deny"
+priority = 999

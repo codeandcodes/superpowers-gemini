@@ -29,6 +29,8 @@ You have access to a set of agent skills. Before taking action on any user reque
 | Stop work, abandon plan, clean up state | **cancel** (dependency-aware cleanup) |
 | Need isolated workspace for feature work | **using-git-worktrees** |
 | Implementation done, ready to merge/PR | **finishing-a-development-branch** |
+| Run autonomously without stopping | **droid** (wraps any skill chain with persistence) |
+| "Don't stop", "keep going until done" | **droid** |
 
 ### Workflow chain
 
@@ -44,6 +46,8 @@ Most tasks follow this chain. Do not skip steps:
 8. **finishing-a-development-branch** — present merge/PR/discard options
 
 For end-to-end autonomous execution, use **autopilot** which chains all of the above automatically.
+
+For persistent autonomous execution that doesn't pause between steps, wrap any workflow with **droid**.
 
 ## Agent Delegation
 
@@ -94,3 +98,15 @@ After all tasks:
 - **Never fix bugs by guessing** — activate systematic-debugging
 - **Use agents for isolation** — delegate to the `implementer` agent instead of coding everything in the main session
 - **Review everything** — delegate to `spec-reviewer` then `code-reviewer` after each task
+
+## Execution Continuity
+
+When executing multi-step plans or skill chains:
+
+- Do not explain a plan and stop. If you can execute safely, execute.
+- Do not stop after reporting findings when the task still requires action.
+- Do not summarize progress and ask "shall I continue?" — just continue.
+- Proceed automatically on clear, low-risk, reversible next steps.
+- Ask only when the next step is irreversible, side-effectful, or materially changes scope.
+- When executing a multi-step plan, complete ALL steps before reporting back.
+- After completing a phase or task, immediately begin the next one.

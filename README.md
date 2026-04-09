@@ -27,6 +27,7 @@ Opinionated development workflow skills and agents for [Gemini CLI](https://gith
 | **web-clone** | When cloning/recreating a website from a URL with visual verification |
 | **session-notes** | During long sessions -- persist decisions and context to survive compression |
 | **cancel** | When stopping work -- dependency-aware cleanup of branches, worktrees, state |
+| **droid** | Persistent autonomous execution -- wraps any skill chain to keep going without pausing |
 | **frontend-design** | When building web components/pages with distinctive design |
 | **code-review** | When reviewing a pull request |
 
@@ -142,10 +143,12 @@ Doctor checks:
 - Gemini CLI is installed
 - python3 or node available (for config resolution)
 - config.json is valid and complete
-- All 21 skills have valid frontmatter (name + description)
-- All 6 agents have resolved models (no `{{MODEL}}` placeholders)
+- All skills have valid frontmatter (name + description)
+- All agents have resolved models (no `{{MODEL}}` placeholders)
 - GEMINI.md is present with skill-first workflow instructions
 - Gemini CLI can discover the installed skills
+- Droid hook installed and executable (if opted in)
+- Droid policy and command files present
 
 ### Skill activation
 
@@ -207,14 +210,23 @@ superpowers-gemini/
 │   ├── visual-verdict/SKILL.md
 │   ├── web-clone/SKILL.md
 │   ├── session-notes/SKILL.md
-│   └── cancel/SKILL.md
-└── agents/
-    ├── code-reviewer.md
-    ├── code-simplifier.md
-    ├── implementer.md
-    ├── spec-reviewer.md
-    ├── explorer.md
-    └── planner.md
+│   ├── cancel/SKILL.md
+│   └── droid/SKILL.md
+├── agents/
+│   ├── code-reviewer.md
+│   ├── code-simplifier.md
+│   ├── implementer.md
+│   ├── spec-reviewer.md
+│   ├── explorer.md
+│   └── planner.md
+├── hooks/
+│   └── after-agent.sh       # Droid auto-continuation hook (optional)
+├── commands/
+│   └── droid.toml            # /droid custom command
+├── policies/
+│   └── droid-auto-approve.toml  # Tool auto-approval rules
+└── scripts/
+    └── droid-run.sh          # Wrapper for multi-hour sessions
 ```
 
 ## How it works
@@ -232,6 +244,127 @@ Three layers work together:
 - **Implementation cycle** -- the `implementer` → `spec-reviewer` → `code-reviewer` loop
 
 Without `GEMINI.md`, the model will likely ignore skills and agents, and just start coding directly. This is equivalent to Claude Code's `using-superpowers` meta-skill.
+
+## Droid: Persistent Autonomous Execution
+
+Droid is a layered persistence system that keeps Gemini running through multi-step plans without pausing to ask "shall I continue?" at every phase or task boundary.
+
+### The Problem
+
+When running multi-step workflows (autopilot, executing-plans, etc.), Gemini's model tends to pause at phase and task boundaries to ask for confirmation. This breaks long-running autonomous sessions and requires the user to repeatedly type "continue". Droid solves this with four independent layers of persistence:
+
+### Architecture
+
+```
+Layer 1: Droid Skill (prompt-level)          — handles ~80% of pauses
+Layer 2: AfterAgent Hook (script-level)      — catches ~15% the skill misses
+Layer 3: Policy Rules (config-level)         — removes tool approval friction
+Layer 4: Wrapper Script (process-level)      — recovers from context exhaustion
+```
+
+Each layer is independently useful. Use any subset.
+
+### Quick Start
+
+**Simplest -- just use the skill:**
+```
+> /droid build the authentication system end to end
+```
+
+**With auto-approval (no --yolo needed):**
+```bash
+# During install, the policy is installed automatically
+./install.sh project
+```
+
+**For multi-hour sessions:**
+```bash
+./scripts/droid-run.sh "build the authentication system end to end"
+```
+
+### Layer 1: Droid Skill
+
+The skill wraps any workflow (autopilot, executing-plans, etc.) with aggressive continuation behavior:
+
+- **Execution policy:** "KEEP GOING UNTIL THE TASK IS FULLY RESOLVED"
+- **State tracking:** `.gemini/state/droid.json` persists iteration count, phase, and task
+- **Adaptive mode:** Detects whether the hook is installed and adjusts verbosity
+  - Hook present: runs lean (hook catches pauses)
+  - Hook absent: runs heavy (adds self-reminder prompts at transitions)
+- **Max iterations:** Default 50, prevents infinite loops
+
+**Activation keywords:** "droid", "don't stop", "keep going until done", "run autonomously"
+
+### Layer 2: AfterAgent Hook
+
+A shell script that runs after every model turn. When droid is active, it detects stopping signals in the model's output and injects a continuation message.
+
+**Detected patterns:**
+- "Shall I continue?", "Would you like me to...", "Ready to proceed?"
+- "Let me know if...", "Want me to...", "Should I proceed?"
+- Output ending with a question and no tool calls
+
+**Installation is optional.** Enable during install:
+```bash
+./install.sh --with-droid-hook project   # enable
+./install.sh --no-droid-hook project     # skip (default: asks interactively)
+```
+
+When the hook is not installed, the droid skill compensates with heavier self-reminder prompts.
+
+### Layer 3: Policy Rules
+
+TOML-based tool auto-approval rules that replace `--yolo` with granular control:
+
+**Always approved (read-only):**
+- `read_file`, `glob`, `grep_search`, `list_directory`, `web_search`, `web_fetch`
+
+**Approved for autonomous execution (write):**
+- `write_file`, `replace`, `run_shell_command`
+
+**Always denied (safety):**
+- `rm -rf /` (recursive root deletion)
+- `git push --force` (force push)
+- `DROP TABLE` / `DROP DATABASE` (destructive SQL)
+
+Installed automatically with `./install.sh`. To disable, remove `.gemini/policies/droid-auto-approve.toml`.
+
+### Layer 4: Wrapper Script
+
+For multi-hour sessions that exceed the context window. The script launches Gemini, detects when the session ends with work still incomplete, and auto-resumes:
+
+```bash
+./scripts/droid-run.sh "build the authentication system"
+./scripts/droid-run.sh --max-retries 10 "build the auth system"
+./scripts/droid-run.sh --no-yolo "task description"
+```
+
+**How it works:**
+1. Launches Gemini with the droid skill
+2. On session end, checks `.gemini/state/droid.json`
+3. If `active: true`, auto-resumes with `gemini --resume`
+4. Repeats up to `--max-retries` times (default 5)
+5. Logs to `.gemini/state/droid-sessions.log`
+
+### Droid Configuration
+
+| Setting | Default | How to change |
+|---------|---------|---------------|
+| Max iterations (skill) | 50 | Edit `skills/droid/SKILL.md` |
+| Max retries (wrapper) | 5 | `--max-retries N` flag |
+| Hook enabled | interactive | `--with-droid-hook` / `--no-droid-hook` |
+| Policy enabled | yes | Remove `.gemini/policies/droid-auto-approve.toml` to disable |
+| Yolo in wrapper | yes | `--no-yolo` flag |
+
+### Droid State Files
+
+| File | Purpose | Created by |
+|------|---------|------------|
+| `.gemini/state/droid.json` | Active session state | Droid skill |
+| `.gemini/state/droid-sessions.log` | Session history | Wrapper script |
+| `.gemini/hooks/after-agent.sh` | Auto-continuation hook | install.sh |
+| `.gemini/policies/droid-auto-approve.toml` | Tool approval rules | install.sh |
+| `.gemini/commands/droid.toml` | /droid command | install.sh |
 
 ## Ported from
 

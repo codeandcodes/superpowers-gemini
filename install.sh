@@ -8,6 +8,15 @@ REPO_URL="https://github.com/codeandcodes/superpowers-gemini.git"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 INSTALL_MODE="${1:-}"
+DROID_HOOK=""  # "", "yes", "no"
+
+# Parse additional flags from all arguments
+for arg in "$@"; do
+  case "$arg" in
+    --with-droid-hook) DROID_HOOK="yes" ;;
+    --no-droid-hook)   DROID_HOOK="no" ;;
+  esac
+done
 
 usage() {
   cat <<'EOF'
@@ -21,6 +30,10 @@ Modes:
   uninstall        Remove installed skills and agents (from both locations)
   config           Print current model configuration
   doctor [path]    Verify installation health (default: check all locations)
+
+Flags:
+  --with-droid-hook    Install the droid auto-continuation hook
+  --no-droid-hook      Skip the droid hook (default: ask interactively)
 
 Examples:
   ./install.sh project                  # Install into current project
@@ -239,6 +252,68 @@ install_to() {
       echo "  Installed GEMINI.md (skill-first workflow instructions)"
     fi
   fi
+
+  # Commands (copied as-is)
+  if [[ -d "$SOURCE_DIR/commands" ]]; then
+    mkdir -p "$dest/commands"
+    local count=0
+    for cmd_file in "$SOURCE_DIR"/commands/*.toml; do
+      if [[ -f "$cmd_file" ]]; then
+        cp "$cmd_file" "$dest/commands/"
+        count=$((count + 1))
+      fi
+    done
+    echo "  Installed $count custom commands"
+  fi
+
+  # Policies (copied as-is)
+  if [[ -d "$SOURCE_DIR/policies" ]]; then
+    mkdir -p "$dest/policies"
+    local count=0
+    for policy_file in "$SOURCE_DIR"/policies/*.toml; do
+      if [[ -f "$policy_file" ]]; then
+        cp "$policy_file" "$dest/policies/"
+        count=$((count + 1))
+      fi
+    done
+    echo "  Installed $count policy files"
+  fi
+
+  # Hooks (only if opted in)
+  if [[ -d "$SOURCE_DIR/hooks" ]]; then
+    local install_hook="$DROID_HOOK"
+
+    # Interactive prompt if no flag given
+    if [[ -z "$install_hook" ]]; then
+      echo ""
+      echo "  Droid auto-continuation hook:"
+      echo "    This hook detects when the model pauses during autonomous execution"
+      echo "    and nudges it to continue. It runs after each model turn."
+      echo ""
+      read -rp "  Enable droid hook? (y/n) [n]: " install_hook_input
+      install_hook="${install_hook_input:-no}"
+      if [[ "$install_hook" == "y" || "$install_hook" == "yes" ]]; then
+        install_hook="yes"
+      else
+        install_hook="no"
+      fi
+    fi
+
+    if [[ "$install_hook" == "yes" ]]; then
+      mkdir -p "$dest/hooks"
+      local count=0
+      for hook_file in "$SOURCE_DIR"/hooks/*.sh; do
+        if [[ -f "$hook_file" ]]; then
+          cp "$hook_file" "$dest/hooks/"
+          chmod +x "$dest/hooks/$(basename "$hook_file")"
+          count=$((count + 1))
+        fi
+      done
+      echo "  Installed $count hooks (droid auto-continuation enabled)"
+    else
+      echo "  Skipped hooks (use --with-droid-hook to enable)"
+    fi
+  fi
 }
 
 # --- Uninstall ---
@@ -249,6 +324,7 @@ uninstall() {
     receiving-code-review dispatching-parallel-agents subagent-driven-development
     finishing-a-development-branch using-git-worktrees frontend-design code-review
     autopilot ultra-qa slop-cleaner visual-verdict web-clone session-notes cancel
+    droid
   )
   local agents=(
     code-reviewer.md code-simplifier.md implementer.md
@@ -274,6 +350,18 @@ uninstall() {
         rm "$base/GEMINI.md"
         echo "  Removed GEMINI.md (from $base)"
       fi
+      # Clean up droid-specific files
+      for f in "$base/hooks/after-agent.sh" "$base/policies/droid-auto-approve.toml" "$base/commands/droid.toml"; do
+        if [[ -f "$f" ]]; then
+          rm "$f"
+          echo "  Removed: $(basename "$f") (from $base)"
+        fi
+      done
+      # Clean up droid state
+      if [[ -f "$base/state/droid.json" ]]; then
+        rm "$base/state/droid.json"
+        echo "  Removed droid state file (from $base)"
+      fi
     fi
   done
 
@@ -293,6 +381,7 @@ doctor() {
     receiving-code-review dispatching-parallel-agents subagent-driven-development
     finishing-a-development-branch using-git-worktrees frontend-design code-review
     autopilot ultra-qa slop-cleaner visual-verdict web-clone session-notes cancel
+    droid
   )
   local EXPECTED_AGENTS=(
     code-reviewer code-simplifier implementer
@@ -475,6 +564,31 @@ except Exception as e:
         fi
       else
         bad "GEMINI.md missing -- model won't know to activate skills (this is critical)"
+      fi
+
+      # Check hooks
+      if [[ -f "$base/hooks/after-agent.sh" ]]; then
+        if [[ -x "$base/hooks/after-agent.sh" ]]; then
+          ok "hooks/after-agent.sh -- installed and executable"
+        else
+          bad "hooks/after-agent.sh -- installed but not executable (chmod +x)"
+        fi
+      else
+        skip "hooks/after-agent.sh not installed (use --with-droid-hook to enable)"
+      fi
+
+      # Check policies
+      if [[ -f "$base/policies/droid-auto-approve.toml" ]]; then
+        ok "policies/droid-auto-approve.toml -- installed"
+      else
+        skip "policies/droid-auto-approve.toml not installed"
+      fi
+
+      # Check commands
+      if [[ -f "$base/commands/droid.toml" ]]; then
+        ok "commands/droid.toml -- installed"
+      else
+        skip "commands/droid.toml not installed"
       fi
 
       # Count what's missing
