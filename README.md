@@ -148,7 +148,7 @@ Doctor checks:
 - GEMINI.md is present with skill-first workflow instructions
 - Gemini CLI can discover the installed skills
 - Droid hook installed and executable (if opted in)
-- Droid policy and command files present
+- Droid policy file present
 
 ### Skill activation
 
@@ -221,8 +221,6 @@ superpowers-gemini/
 │   └── planner.md
 ├── hooks/
 │   └── after-agent.sh       # Droid auto-continuation hook (optional)
-├── commands/
-│   └── droid.toml            # /droid custom command
 ├── policies/
 │   └── droid-auto-approve.toml  # Tool auto-approval rules
 └── scripts/
@@ -268,7 +266,7 @@ Each layer is independently useful. Use any subset.
 
 **Simplest -- just use the skill:**
 ```
-> /droid build the authentication system end to end
+> droid build the authentication system end to end
 ```
 
 **With auto-approval (no --yolo needed):**
@@ -364,7 +362,6 @@ For multi-hour sessions that exceed the context window. The script launches Gemi
 | `.gemini/state/droid-sessions.log` | Session history | Wrapper script |
 | `.gemini/hooks/after-agent.sh` | Auto-continuation hook | install.sh |
 | `.gemini/policies/droid-auto-approve.toml` | Tool approval rules | install.sh |
-| `.gemini/commands/droid.toml` | /droid command | install.sh |
 
 ## Ported from
 

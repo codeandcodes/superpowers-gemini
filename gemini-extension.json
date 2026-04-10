@@ -4,6 +4,5 @@
   "description": "Opinionated development workflow skills and agents for Gemini CLI - brainstorming, planning, TDD, debugging, code review, and more.",
   "skills": "./skills",
   "agents": "./agents",
-  "hooks": "./hooks",
-  "commands": "./commands"
+  "hooks": "./hooks"
 }

@@ -15,7 +15,7 @@ Droid does NOT define its own workflow. It wraps whatever skill chain the user w
 ## When to Use
 
 - User says "droid", "don't stop", "keep going until done", "run autonomously"
-- User invokes `/droid <task>`
+- User says "droid <task>"
 - User wants a multi-step plan executed without interruption
 - Any task where the model might pause between phases or tasks to ask "shall I continue?"
 
@@ -119,6 +119,6 @@ When the wrapped skill chain finishes:
 
 ## Integration
 
-**Called by:** User directly, /droid command
+**Called by:** User directly via keyword
 **Wraps:** autopilot, executing-plans, subagent-driven-development, or any skill chain
 **Uses:** session-notes (in heavy mode), verification-before-completion (on completion), cancel (on abort)

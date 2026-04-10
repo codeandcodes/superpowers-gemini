@@ -253,19 +253,6 @@ install_to() {
     fi
   fi
 
-  # Commands (copied as-is)
-  if [[ -d "$SOURCE_DIR/commands" ]]; then
-    mkdir -p "$dest/commands"
-    local count=0
-    for cmd_file in "$SOURCE_DIR"/commands/*.toml; do
-      if [[ -f "$cmd_file" ]]; then
-        cp "$cmd_file" "$dest/commands/"
-        count=$((count + 1))
-      fi
-    done
-    echo "  Installed $count custom commands"
-  fi
-
   # Policies (copied as-is)
   if [[ -d "$SOURCE_DIR/policies" ]]; then
     mkdir -p "$dest/policies"
@@ -351,7 +338,7 @@ uninstall() {
         echo "  Removed GEMINI.md (from $base)"
       fi
       # Clean up droid-specific files
-      for f in "$base/hooks/after-agent.sh" "$base/policies/droid-auto-approve.toml" "$base/commands/droid.toml"; do
+      for f in "$base/hooks/after-agent.sh" "$base/policies/droid-auto-approve.toml"; do
         if [[ -f "$f" ]]; then
           rm "$f"
           echo "  Removed: $(basename "$f") (from $base)"
@@ -582,13 +569,6 @@ except Exception as e:
         ok "policies/droid-auto-approve.toml -- installed"
       else
         skip "policies/droid-auto-approve.toml not installed"
-      fi
-
-      # Check commands
-      if [[ -f "$base/commands/droid.toml" ]]; then
-        ok "commands/droid.toml -- installed"
-      else
-        skip "commands/droid.toml not installed"
       fi
 
       # Count what's missing
