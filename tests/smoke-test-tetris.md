@@ -112,6 +112,18 @@ Build configuration:
 - ProGuard rules
 - Adaptive app icon: T-piece (purple) on dark background
 - Run ALL tests, fix ALL failures, build both APKs, verify with aapt dump badging
+
+After building, if a device or emulator is available, activate the adb-verify skill to:
+1. Install the debug APK on the device
+2. Launch the app and screenshot the splash animation and main menu
+3. Start Marathon mode, screenshot the initial game board with first piece
+4. Send swipe inputs: left, right, down (soft drop), up (hard drop) — screenshot after each
+5. Let pieces stack up, screenshot mid-game showing multiple locked pieces
+6. Navigate to Settings, switch to Modern Dark theme, screenshot
+7. Start Sprint mode, verify the timer is visible, screenshot
+8. Navigate to How to Play screen, screenshot the tutorial
+9. Run monkey test with 1000 events, check for crashes
+10. Generate the full ADB verification report with all screenshots
 ```
 
 ## What to Verify
@@ -121,4 +133,7 @@ Build configuration:
 - [ ] SRS wall kick tests all pass (this is the hardest logic)
 - [ ] All unit tests pass
 - [ ] Both debug and release APKs generated
+- [ ] adb-verify skill activated and produced screenshot evidence
+- [ ] Monkey test passed (0 crashes)
+- [ ] ADB verification report generated
 - [ ] Total session time logged

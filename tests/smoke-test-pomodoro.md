@@ -182,6 +182,22 @@ Build configuration:
 - Run ALL tests across ALL modules: ./gradlew test connectedAndroidTest
 - Fix ALL failures before generating final APKs
 - Verify APKs with aapt dump badging
+
+After building, if a device or emulator is available, activate the adb-verify skill to:
+1. Install the debug APK on the device
+2. Launch the app and screenshot the home screen (greeting, daily goal ring, task list)
+3. Navigate to Tasks → Create Task: input title "Test Task", set priority High, save
+4. Screenshot the task list, verify "Test Task" appears with High priority indicator
+5. Tap the task to open detail screen, screenshot
+6. Start a pomodoro linked to the task, screenshot the timer running
+7. Wait 5 seconds, screenshot again (verify countdown progressing)
+8. Pause the timer, screenshot (verify paused state)
+9. Navigate to Stats screen, screenshot daily view
+10. Navigate to Settings, change theme to dark, screenshot
+11. Force stop app, relaunch — verify task and settings persisted, screenshot
+12. Run monkey test with 1000 events, check for crashes in logcat
+13. Check notification bar for foreground service notification during timer
+14. Generate the full ADB verification report with all screenshots
 ```
 
 ## What to Verify
@@ -193,5 +209,9 @@ Build configuration:
 - [ ] Room database with all 5 tables and migrations
 - [ ] All unit tests pass across all modules
 - [ ] Both debug and release APKs generated
+- [ ] adb-verify skill activated and produced screenshot evidence
+- [ ] Foreground service notification visible in screenshot
+- [ ] Monkey test passed (0 crashes)
+- [ ] ADB verification report generated
 - [ ] Total session time logged
 - [ ] Session survived at least one context compression (check session-notes if created)

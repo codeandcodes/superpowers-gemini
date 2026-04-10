@@ -311,7 +311,7 @@ uninstall() {
     receiving-code-review dispatching-parallel-agents subagent-driven-development
     finishing-a-development-branch using-git-worktrees frontend-design code-review
     autopilot ultra-qa slop-cleaner visual-verdict web-clone session-notes cancel
-    droid
+    droid adb-verify
   )
   local agents=(
     code-reviewer.md code-simplifier.md implementer.md
@@ -368,7 +368,7 @@ doctor() {
     receiving-code-review dispatching-parallel-agents subagent-driven-development
     finishing-a-development-branch using-git-worktrees frontend-design code-review
     autopilot ultra-qa slop-cleaner visual-verdict web-clone session-notes cancel
-    droid
+    droid adb-verify
   )
   local EXPECTED_AGENTS=(
     code-reviewer code-simplifier implementer

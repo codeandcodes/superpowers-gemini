@@ -29,6 +29,7 @@ You have access to a set of agent skills. Before taking action on any user reque
 | Stop work, abandon plan, clean up state | **cancel** (dependency-aware cleanup) |
 | Need isolated workspace for feature work | **using-git-worktrees** |
 | Implementation done, ready to merge/PR | **finishing-a-development-branch** |
+| Test Android app on device/emulator via ADB | **adb-verify** (install, screenshot, interact, crash check) |
 | Run autonomously without stopping | **droid** (wraps any skill chain with persistence) |
 | "Don't stop", "keep going until done" | **droid** |
 

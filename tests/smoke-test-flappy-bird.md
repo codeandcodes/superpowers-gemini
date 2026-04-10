@@ -79,6 +79,16 @@ Project structure:
 - Separate source sets for test and androidTest
 
 Run ALL tests. Fix any failures. Build both APKs. Verify they install with: adb install -r app/build/outputs/apk/debug/app-debug.apk (if device available, otherwise just verify APK validity).
+
+After building, if a device or emulator is available, activate the adb-verify skill to:
+1. Install the debug APK on the device
+2. Launch the app and screenshot the splash screen and main menu
+3. Start a game, take rapid tap inputs to flap, screenshot mid-game
+4. Let the bird fall to trigger game over, screenshot the game over screen
+5. Navigate to Settings, toggle sound, verify the toggle persists
+6. Navigate to High Scores, verify the score from the game appears
+7. Run monkey test with 500 events, check for crashes
+8. Generate the full ADB verification report with all screenshots
 ```
 
 ## What to Verify
@@ -87,4 +97,7 @@ Run ALL tests. Fix any failures. Build both APKs. Verify they install with: adb 
 - [ ] Model did not pause to ask "shall I continue?" between major phases
 - [ ] All unit tests pass
 - [ ] Both debug and release APKs generated
+- [ ] adb-verify skill activated and produced screenshot evidence
+- [ ] Monkey test passed (0 crashes)
+- [ ] ADB verification report generated
 - [ ] Total session time logged

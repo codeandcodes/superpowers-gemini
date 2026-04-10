@@ -27,6 +27,7 @@ Opinionated development workflow skills and agents for [Gemini CLI](https://gith
 | **web-clone** | When cloning/recreating a website from a URL with visual verification |
 | **session-notes** | During long sessions -- persist decisions and context to survive compression |
 | **cancel** | When stopping work -- dependency-aware cleanup of branches, worktrees, state |
+| **adb-verify** | After building an Android APK -- installs, screenshots, drives UI via ADB, checks crashes |
 | **droid** | Persistent autonomous execution -- wraps any skill chain to keep going without pausing |
 | **frontend-design** | When building web components/pages with distinctive design |
 | **code-review** | When reviewing a pull request |
@@ -211,7 +212,8 @@ superpowers-gemini/
 │   ├── web-clone/SKILL.md
 │   ├── session-notes/SKILL.md
 │   ├── cancel/SKILL.md
-│   └── droid/SKILL.md
+│   ├── droid/SKILL.md
+│   └── adb-verify/SKILL.md
 ├── agents/
 │   ├── code-reviewer.md
 │   ├── code-simplifier.md
